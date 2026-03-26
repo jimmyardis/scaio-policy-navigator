@@ -1,0 +1,101 @@
+[
+  {
+    "id": "sc-agencies-ai-strategy",
+    "title": "SC State Agencies AI Strategy (Final)",
+    "url": "https://admin.sc.gov/sites/admin/files/Documents/OED/Final%20SC%20AI%20Strategy.pdf",
+    "local_path": null,
+    "tier": 1,
+    "date": "2024",
+    "tags": ["ai-strategy", "state-government", "itmo", "oed"]
+  },
+  {
+    "id": "sc-ai-symposium-scra",
+    "title": "SCRA — SC AI Report & Symposium",
+    "url": "https://scra.org/scra-releases-report-on-ai-for-the-state-of-south-carolina/",
+    "local_path": null,
+    "tier": 1,
+    "date": "2024",
+    "tags": ["ai-strategy", "symposium", "scra"]
+  },
+  {
+    "id": "scra-ai-hub",
+    "title": "SCRA AI Hub",
+    "url": "https://scra.org/ai/",
+    "local_path": null,
+    "tier": 1,
+    "date": null,
+    "tags": ["ai-strategy", "scra"]
+  },
+  {
+    "id": "sc-house-ai-committee",
+    "title": "SC House Regulations & Administrative Procedures Committee (AI oversight)",
+    "url": "https://www.scstatehouse.gov/CommitteeInfo/HouseRegulationsAndAdministrativeProceduresCommittee/",
+    "local_path": null,
+    "tier": 1,
+    "date": null,
+    "tags": ["legislation", "committee"]
+  },
+  {
+    "id": "sc-h5253-ai-education",
+    "title": "SC H.5253 — AI in Education (126th Session)",
+    "url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/5253.htm",
+    "local_path": null,
+    "tier": 1,
+    "date": "2025",
+    "tags": ["legislation", "education", "ai-policy"]
+  },
+  {
+    "id": "sc-s443-health-claims-ai",
+    "title": "SC S.443 — Health Claims & AI",
+    "url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/443.htm",
+    "local_path": null,
+    "tier": 1,
+    "date": "2025",
+    "tags": ["legislation", "health", "ai-policy"]
+  },
+  {
+    "id": "govtech-sc-ai-center-excellence",
+    "title": "GovTech — SC AI Center of Excellence",
+    "url": "https://www.govtech.com/artificial-intelligence/south-carolina-prepares-to-launch-ai-center-of-excellence",
+    "local_path": null,
+    "tier": 1,
+    "date": "2024",
+    "tags": ["ai-strategy", "center-of-excellence", "govtech"]
+  },
+  {
+    "id": "govtech-sc-ai-cyber-initiatives",
+    "title": "GovTech — SC AI Cyber Initiatives",
+    "url": "https://www.govtech.com/artificial-intelligence/south-carolina-ai-cyber-initiatives-reshape-services",
+    "local_path": null,
+    "tier": 1,
+    "date": "2024",
+    "tags": ["cybersecurity", "ai-policy", "govtech"]
+  },
+  {
+    "id": "scaio-home",
+    "title": "SCAIO — Full Site (scaio.org)",
+    "url": "https://scaio.org",
+    "local_path": null,
+    "tier": 1,
+    "date": null,
+    "tags": ["scaio", "about", "ecosystem", "policy", "research"]
+  },
+  {
+    "id": "usc-aii-center",
+    "title": "USC AI Institute (AII) — Research Center",
+    "url": "https://research.cec.sc.edu/aii/",
+    "local_path": null,
+    "tier": 1,
+    "date": null,
+    "tags": ["research", "usc", "ai-institute"]
+  },
+  {
+    "id": "sc-epscor-adapt",
+    "title": "SC EPSCoR — ADAPT in SC AI Program",
+    "url": "https://scepscor.org/adapt-in-sc-overview/",
+    "local_path": null,
+    "tier": 1,
+    "date": null,
+    "tags": ["research", "epscor", "ai-education"]
+  }
+]

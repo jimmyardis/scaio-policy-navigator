@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC AI Policy Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #f6f8fb;
+      --surface:     #ffffff;
+      --surface-2:   #eef4fb;
+      --text:        #142133;
+      --muted:       #5b6a7b;
+      --border:      #d9e4f2;
+      --navy:        #081a36;
+      --navy-2:      #0a2a54;
+      --blue:        #0b4ea2;
+      --blue-2:      #1f64cc;
+      --blue-3:      #2f7ae5;
+      --blue-soft:   #d9e9ff;
+      --shadow:      0 14px 34px rgba(10,42,84,0.08);
+      --radius:      22px;
+      --font:        'Inter', sans-serif;
+      --font-serif:  'Libre Baskerville', serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    /* ── Layout ── */
+    .widget {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 14px 34px rgba(10,42,84,0.18);
+    }
+
+    /* ── Header ── */
+    .widget-header {
+      background: linear-gradient(90deg, rgba(8,26,54,0.97), rgba(10,42,84,0.94));
+      color: #fff;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-shrink: 0;
+    }
+    .widget-header .dot-online {
+      width: 8px; height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .widget-header .title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 0.88rem;
+      flex: 1;
+    }
+    .widget-header .subtitle { font-size: 0.68rem; color: rgba(255,255,255,0.55); }
+
+    /* ── Thread ── */
+    .thread {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--bg);
+    }
+
+    /* ── Intro message ── */
+    .intro {
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.65rem 0.85rem;
+    }
+
+    /* ── Chips ── */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.75rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .chip:hover { border-color: var(--blue-2); background: var(--blue-soft); }
+
+    /* ── Bubbles ── */
+    .msg { display: flex; flex-direction: column; }
+    .msg.user { align-items: flex-end; }
+    .msg.asst { align-items: flex-start; }
+
+    .bubble {
+      max-width: 88%;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+    .msg.user .bubble {
+      background: linear-gradient(135deg, #0b4ea2, #2f7ae5);
+      color: #fff;
+      border-radius: 18px 18px 4px 18px;
+    }
+    .msg.asst .bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: var(--shadow);
+    }
+    .msg.asst.no-info .bubble {
+      background: var(--surface-2);
+      color: var(--muted);
+      border-style: dashed;
+      border-radius: 18px 18px 18px 4px;
+    }
+
+    /* Markdown-lite */
+    .bubble h3 { font-size: 0.85rem; font-weight: 600; margin: 0.6rem 0 0.2rem; color: var(--navy); }
+    .bubble h3:first-child { margin-top: 0; }
+    .bubble ul { padding-left: 1.1rem; margin: 0.3rem 0; }
+    .bubble li { margin-bottom: 0.15rem; }
+    .bubble p  { margin-bottom: 0.4rem; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble blockquote {
+      border-left: 2px solid var(--blue-3);
+      padding-left: 0.6rem;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0.4rem 0;
+    }
+    .bubble hr { border: none; border-top: 1px solid var(--border); margin: 0.6rem 0; }
+    .bubble strong { font-weight: 600; }
+
+    /* Citations */
+    .citations { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.22rem; }
+    .citation-link {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+    }
+    .citation-link:hover { text-decoration: underline; color: var(--blue-2); }
+    .citation-num { font-size: 0.65rem; font-weight: 700; color: var(--muted); }
+
+    /* Typing indicator */
+    .typing-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 18px 4px;
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.22rem;
+      box-shadow: var(--shadow);
+    }
+    .dot {
+      width: 6px; height: 6px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30%            { transform: translateY(-5px); }
+    }
+
+    /* ── Input bar ── */
+    .input-bar {
+      flex-shrink: 0;
+      display: flex;
+      gap: 0.4rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+      transition: border-top-color 0.15s;
+    }
+    .input-bar:focus-within { border-top-color: var(--blue-2); }
+
+    #question {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: var(--font);
+      font-size: 0.82rem;
+      color: var(--text);
+      background: transparent;
+      resize: none;
+      height: 22px;
+      max-height: 80px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+    #question::placeholder { color: var(--muted); }
+
+    #send-btn {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #0b4ea2, #2f7ae5);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    #send-btn:hover { opacity: 0.88; transform: scale(1.05); }
+    #send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    #send-btn svg { width: 15px; height: 15px; }
+
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="widget">
+
+  <!-- Header -->
+  <div class="widget-header">
+    <div class="dot-online"></div>
+    <div>
+      <div class="title">SC AI Policy Navigator</div>
+      <div class="subtitle">Answers from official SC sources</div>
+    </div>
+  </div>
+
+  <!-- Thread -->
+  <div class="thread" id="thread">
+    <div class="intro">Ask me about SC AI legislation, state strategy, or the policy ecosystem. I'll cite my sources.</div>
+    <div class="chips" id="chips">
+      <button class="chip" onclick="submitChip(this)">What is SC's AI strategy?</button>
+      <button class="chip" onclick="submitChip(this)">What AI bills are active?</button>
+      <button class="chip" onclick="submitChip(this)">What is the AI Center of Excellence?</button>
+      <button class="chip" onclick="submitChip(this)">How does SC protect citizen data?</button>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-bar">
+    <textarea id="question" placeholder="Ask about SC AI policy…" rows="1"></textarea>
+    <button id="send-btn" onclick="sendQuestion()" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:8001';
+
+  const qa = document.getElementById('question');
+  qa.addEventListener('input', () => {
+    qa.style.height = 'auto';
+    qa.style.height = Math.min(qa.scrollHeight, 80) + 'px';
+  });
+  qa.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); }
+  });
+
+  function renderMarkdown(text) {
+    return text
+      .replace(/^---+$/gm, '<hr>')
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/((?:^[-*] .+\n?)+)/gm, match => {
+        const items = match.trim().split('\n').map(l => `<li>${l.replace(/^[-*] /, '')}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      })
+      .replace(/\n\n+/g, '</p><p>')
+      .replace(/^(?!<[hbu])/, '<p>')
+      .replace(/(?<![>])$/, '</p>')
+      .replace(/<p><\/p>/g, '')
+      .replace(/<p>(<[hbu])/g, '$1')
+      .replace(/(<\/[hbu][^>]*>)<\/p>/g, '$1');
+  }
+
+  function deduplicateSources(sources) {
+    const seen = new Set();
+    return sources.filter(s => { if (seen.has(s.url)) return false; seen.add(s.url); return true; });
+  }
+
+  function scrollThread() {
+    const t = document.getElementById('thread');
+    t.scrollTop = t.scrollHeight;
+  }
+
+  function appendUser(text) {
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.innerHTML = `<div class="bubble">${text.replace(/</g,'&lt;')}</div>`;
+    document.getElementById('thread').appendChild(div);
+    scrollThread();
+  }
+
+  function appendTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg asst';
+    div.innerHTML = `<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    document.getElementById('thread').appendChild(div);
+    scrollThread();
+    return div;
+  }
+
+  function replaceWithAnswer(el, data) {
+    const noInfo = data.chunks_used === 0;
+    const html = renderMarkdown(data.answer);
+    let citationsHtml = '';
+    if (data.sources && data.sources.length) {
+      const unique = deduplicateSources(data.sources);
+      citationsHtml = '<div class="citations">' +
+        unique.map((s, i) => `
+          <a class="citation-link" href="${s.url}" target="_blank" rel="noopener">
+            <span class="citation-num">[${i+1}]</span>${s.title}${s.date ? ' · ' + s.date : ''}
+          </a>`).join('') + '</div>';
+    }
+    el.className = `msg asst${noInfo ? ' no-info' : ''}`;
+    el.innerHTML = `<div class="bubble">${html}${citationsHtml}</div>`;
+    scrollThread();
+  }
+
+  let sending = false;
+
+  async function sendQuestion(text) {
+    if (sending) return;
+    const input = document.getElementById('question');
+    const q = (text || input.value).trim();
+    if (!q) return;
+
+    document.getElementById('chips').style.display = 'none';
+    input.value = '';
+    input.style.height = 'auto';
+
+    const btn = document.getElementById('send-btn');
+    sending = true;
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div>';
+
+    appendUser(q);
+    const typingEl = appendTyping();
+
+    try {
+      const res = await fetch(`${API_BASE}/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, top_k: 8, include_sources: true }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      replaceWithAnswer(typingEl, await res.json());
+    } catch {
+      typingEl.className = 'msg asst no-info';
+      typingEl.innerHTML = `<div class="bubble">Could not reach the server. Please try again.</div>`;
+    } finally {
+      sending = false;
+      btn.disabled = false;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+      input.focus();
+    }
+  }
+
+  function submitChip(el) { sendQuestion(el.textContent.trim()); }
+</script>
+</body>
+</html>

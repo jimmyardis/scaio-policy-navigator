@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask the SC AI Policy Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #f6f8fb;
+      --surface:     #ffffff;
+      --surface-2:   #eef4fb;
+      --text:        #142133;
+      --muted:       #5b6a7b;
+      --border:      #d9e4f2;
+      --navy:        #081a36;
+      --navy-2:      #0a2a54;
+      --blue:        #0b4ea2;
+      --blue-2:      #1f64cc;
+      --blue-3:      #2f7ae5;
+      --blue-soft:   #d9e9ff;
+      --shadow:      0 14px 34px rgba(10,42,84,0.08);
+      --radius:      22px;
+      --font:        'Inter', sans-serif;
+      --font-serif:  'Libre Baskerville', serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Site header ── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(90deg, rgba(8,26,54,0.97), rgba(10,42,84,0.94));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .site-header .wordmark {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #fff;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+    }
+    .site-header .submark {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      border-left: 1px solid rgba(255,255,255,0.18);
+      padding-left: 1.1rem;
+    }
+    .site-header nav {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .site-header nav a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.15s;
+    }
+    .site-header nav a:hover { color: #fff; }
+    .site-header nav a.active {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 100%);
+      color: #fff;
+      padding: 4rem 2rem 3.5rem;
+      text-align: center;
+    }
+    .hero .kicker {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--blue-soft);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.22;
+      margin-bottom: 1.1rem;
+      color: #fff;
+    }
+    .hero p {
+      max-width: 580px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 300;
+    }
+
+    /* ── Section wrapper ── */
+    .section {
+      padding: 3rem 2rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .section + .section { padding-top: 0; }
+
+    /* Section kicker + title */
+    .kicker {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1.5rem;
+      line-height: 1.3;
+    }
+
+    /* ── How it works cards ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.4rem 1.35rem;
+      box-shadow: var(--shadow);
+    }
+    .card-icon {
+      width: 38px; height: 38px;
+      background: var(--surface-2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem;
+      margin-bottom: 0.85rem;
+    }
+    .card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+    .card p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── Corpus section ── */
+    .source-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .source-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.7rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+    }
+    .source-item a {
+      color: var(--blue);
+      text-decoration: none;
+      flex: 1;
+      font-weight: 500;
+    }
+    .source-item a:hover { text-decoration: underline; }
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--blue);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .source-list-loading { color: var(--muted); font-size: 0.875rem; }
+
+    /* ── Chat section ── */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--blue);
+      border-radius: 999px;
+      padding: 0.4rem 0.95rem;
+      font-size: 0.82rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .chip:hover { border-color: var(--blue-2); background: var(--blue-soft); }
+
+    /* Thread */
+    .thread {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      min-height: 0;
+    }
+
+    /* Bubbles */
+    .msg { display: flex; flex-direction: column; }
+    .msg.user { align-items: flex-end; }
+    .msg.asst { align-items: flex-start; }
+
+    .bubble {
+      max-width: 82%;
+      padding: 0.9rem 1.15rem;
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+    .msg.user .bubble {
+      background: linear-gradient(135deg, #0b4ea2, #2f7ae5);
+      color: #fff;
+      border-radius: 18px 18px 4px 18px;
+    }
+    .msg.asst .bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: var(--shadow);
+    }
+    .msg.asst.no-info .bubble {
+      background: var(--surface-2);
+      color: var(--muted);
+      border-style: dashed;
+      border-radius: 18px 18px 18px 4px;
+    }
+
+    /* Markdown-lite */
+    .bubble h3 { font-size: 0.95rem; font-weight: 600; margin: 0.75rem 0 0.25rem; color: var(--navy); }
+    .bubble h3:first-child { margin-top: 0; }
+    .bubble ul  { padding-left: 1.25rem; margin: 0.35rem 0; }
+    .bubble li  { margin-bottom: 0.2rem; }
+    .bubble p   { margin-bottom: 0.5rem; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble blockquote {
+      border-left: 3px solid var(--blue-3);
+      padding-left: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0.5rem 0;
+    }
+    .bubble hr { border: none; border-top: 1px solid var(--border); margin: 0.75rem 0; }
+    .bubble strong { font-weight: 600; }
+
+    /* Citations */
+    .citations { margin-top: 0.7rem; display: flex; flex-direction: column; gap: 0.28rem; }
+    .citation-link {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+    }
+    .citation-link:hover { text-decoration: underline; color: var(--blue-2); }
+    .citation-num { font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+
+    /* Typing indicator */
+    .typing-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 18px 4px;
+      padding: 0.9rem 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      width: fit-content;
+      box-shadow: var(--shadow);
+    }
+    .dot {
+      width: 7px; height: 7px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30%            { transform: translateY(-6px); }
+    }
+
+    /* Input bar */
+    .input-bar {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+      box-shadow: var(--shadow);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input-bar:focus-within {
+      border-color: var(--blue-2);
+      box-shadow: 0 0 0 3px rgba(31,100,204,0.12);
+    }
+    #question {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      color: var(--text);
+      background: transparent;
+      resize: none;
+      height: 24px;
+      max-height: 120px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+    #question::placeholder { color: var(--muted); }
+    #send-btn {
+      flex-shrink: 0;
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #0b4ea2, #2f7ae5);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    #send-btn:hover { opacity: 0.88; transform: scale(1.04); }
+    #send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    #send-btn svg { width: 18px; height: 18px; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Site header ── -->
+<header class="site-header">
+  <a href="/" class="wordmark">SCAIO</a>
+  <span class="submark">South Carolina AI Observatory</span>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/ask" class="active">Ask the Navigator</a>
+  </nav>
+</header>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <span class="kicker">Policy Navigator</span>
+  <h1>Ask the SC AI Policy Navigator</h1>
+  <p>Get instant, cited answers about South Carolina's artificial intelligence legislation, state strategy, and policy ecosystem. Every answer is drawn directly from primary government sources — no guessing.</p>
+</section>
+
+<!-- ── How it works ── -->
+<section class="section">
+  <span class="kicker">How it works</span>
+  <h2 class="section-title">Search, retrieve, and cite — automatically</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🔍</div>
+      <h3>Search</h3>
+      <p>Your question is matched against a library of SC government documents, bills, and reports using meaning-based search — not just keywords.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📄</div>
+      <h3>Retrieve</h3>
+      <p>The most relevant passages are pulled from sources like the SC AI Strategy, legislative committee records, and official state agency documents.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">✅</div>
+      <h3>Cite</h3>
+      <p>An answer is composed using only those passages. Every claim links back to its source so you can verify it yourself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Corpus section ── -->
+<section class="section">
+  <span class="kicker">Corpus</span>
+  <h2 class="section-title">What does this know?</h2>
+  <div class="source-list" id="source-list">
+    <span class="source-list-loading">Loading sources…</span>
+  </div>
+</section>
+
+<!-- ── Chat section ── -->
+<section class="section">
+  <span class="kicker">Ask a question</span>
+  <h2 class="section-title">What do you want to know?</h2>
+
+  <div class="chips" id="chips">
+    <button class="chip" onclick="submitChip(this)">What is SC's AI strategy?</button>
+    <button class="chip" onclick="submitChip(this)">What AI bills are in the SC legislature?</button>
+    <button class="chip" onclick="submitChip(this)">What is the SC AI Center of Excellence?</button>
+    <button class="chip" onclick="submitChip(this)">How does SC protect citizens from AI risks?</button>
+  </div>
+
+  <div class="thread" id="thread"></div>
+
+  <div class="input-bar">
+    <textarea id="question" placeholder="Ask about SC AI policy…" rows="1"></textarea>
+    <button id="send-btn" onclick="sendQuestion()" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<footer>
+  Powered by SCAIO · Sources are official SC government documents · Answers may not reflect the latest legislative changes
+</footer>
+
+<script>
+  const API_BASE = 'http://localhost:8001';
+
+  // ── Auto-resize textarea ──
+  const qa = document.getElementById('question');
+  qa.addEventListener('input', () => {
+    qa.style.height = 'auto';
+    qa.style.height = Math.min(qa.scrollHeight, 120) + 'px';
+  });
+  qa.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); }
+  });
+
+  // ── Load sources ──
+  async function loadSources() {
+    const list = document.getElementById('source-list');
+    try {
+      const res = await fetch(`${API_BASE}/sources`);
+      const sources = await res.json();
+      list.innerHTML = sources.map(s => `
+        <div class="source-item">
+          <a href="${s.url}" target="_blank" rel="noopener">${s.title}</a>
+          <span class="pill">Tier ${s.tier}</span>
+        </div>
+      `).join('');
+    } catch {
+      list.innerHTML = '<span class="source-list-loading">Could not load source list.</span>';
+    }
+  }
+  loadSources();
+
+  // ── Markdown-lite renderer ──
+  function renderMarkdown(text) {
+    return text
+      // Horizontal rule (--- lines)
+      .replace(/^---+$/gm, '<hr>')
+      // Block quote
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      // H2/H3 headers
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+      // Bold
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // Bullet lists — collect consecutive lines then wrap
+      .replace(/((?:^[-*] .+\n?)+)/gm, match => {
+        const items = match.trim().split('\n').map(l => `<li>${l.replace(/^[-*] /, '')}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      })
+      // Paragraphs — double newlines
+      .replace(/\n\n+/g, '</p><p>')
+      .replace(/^(?!<[hbu])/, '<p>')
+      .replace(/(?<![>])$/, '</p>')
+      // Clean up empty paragraphs
+      .replace(/<p><\/p>/g, '')
+      .replace(/<p>(<[hbu])/g, '$1')
+      .replace(/(<\/[hbu][^>]*>)<\/p>/g, '$1');
+  }
+
+  // ── Citation deduplication ──
+  function deduplicateSources(sources) {
+    const seen = new Set();
+    return sources.filter(s => {
+      if (seen.has(s.url)) return false;
+      seen.add(s.url);
+      return true;
+    });
+  }
+
+  // ── Append message to thread ──
+  function appendUser(text) {
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.innerHTML = `<div class="bubble">${text.replace(/</g,'&lt;')}</div>`;
+    document.getElementById('thread').appendChild(div);
+    scrollThread();
+    return div;
+  }
+
+  function appendTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg asst';
+    div.innerHTML = `<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    document.getElementById('thread').appendChild(div);
+    scrollThread();
+    return div;
+  }
+
+  function replaceWithAnswer(typingEl, data) {
+    const noInfo = data.chunks_used === 0;
+    const html = renderMarkdown(data.answer);
+
+    let citationsHtml = '';
+    if (data.sources && data.sources.length) {
+      const unique = deduplicateSources(data.sources);
+      citationsHtml = '<div class="citations">' +
+        unique.map((s, i) => `
+          <a class="citation-link" href="${s.url}" target="_blank" rel="noopener">
+            <span class="citation-num">[${i+1}]</span>
+            ${s.title}${s.date ? ' · ' + s.date : ''}
+          </a>`).join('') +
+        '</div>';
+    }
+
+    typingEl.className = `msg asst${noInfo ? ' no-info' : ''}`;
+    typingEl.innerHTML = `<div class="bubble">${html}${citationsHtml}</div>`;
+    scrollThread();
+  }
+
+  function scrollThread() {
+    const t = document.getElementById('thread');
+    t.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+
+  // ── Send ──
+  let sending = false;
+
+  async function sendQuestion(text) {
+    if (sending) return;
+    const input = document.getElementById('question');
+    const q = (text || input.value).trim();
+    if (!q) return;
+
+    // Hide chips after first send
+    document.getElementById('chips').style.display = 'none';
+
+    input.value = '';
+    input.style.height = 'auto';
+
+    const btn = document.getElementById('send-btn');
+    sending = true;
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div>';
+
+    appendUser(q);
+    const typingEl = appendTyping();
+
+    try {
+      const res = await fetch(`${API_BASE}/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, top_k: 8, include_sources: true }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      replaceWithAnswer(typingEl, data);
+    } catch (err) {
+      typingEl.className = 'msg asst no-info';
+      typingEl.innerHTML = `<div class="bubble">Something went wrong connecting to the server. Please try again.</div>`;
+    } finally {
+      sending = false;
+      btn.disabled = false;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+      input.focus();
+    }
+  }
+
+  function submitChip(el) { sendQuestion(el.textContent); }
+</script>
+</body>
+</html>
