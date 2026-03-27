@@ -98,7 +98,13 @@ from pydantic import BaseModel
 app = FastAPI(title="SCAIO Policy Navigator")
 ```
 
-Run: `uvicorn execution.api_server_scaio:app --port 8001`
+Run locally: `uvicorn execution.api_server_scaio:app --port 8001`
+
+**Live Railway URL:** `https://web-production-015441.up.railway.app`
+- `/ask` — standalone chat UI
+- `/health` — status + vector count
+- `/sources` — corpus source list
+- `/query` — POST RAG endpoint
 
 ---
 
