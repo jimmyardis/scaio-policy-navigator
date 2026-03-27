@@ -1,7 +1,7 @@
 (() => {
-  const API_BASE   = 'http://localhost:8001';
+  const API_BASE   = '';  // empty = same origin
   const script     = document.currentScript;
-  const widgetSrc  = script.getAttribute('data-widget-src') || (API_BASE.replace(':8001','') + '/frontend/widget.html');
+  const widgetSrc  = script.getAttribute('data-widget-src') || '/frontend/widget.html';
 
   const BTN_SIZE   = 60;
   const MARGIN     = 24;

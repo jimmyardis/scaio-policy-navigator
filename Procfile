@@ -1,0 +1,1 @@
+web: uvicorn execution.api_server_scaio:app --host 0.0.0.0 --port $PORT

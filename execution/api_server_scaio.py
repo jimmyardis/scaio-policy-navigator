@@ -23,13 +23,15 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent.parent / ".env")
+load_dotenv(Path(__file__).parent.parent / ".env")  # no-op on Railway (env vars injected directly)
 
 import voyageai
 from pinecone import Pinecone
 from anthropic import Anthropic
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 # ── Config ─────────────────────────────────────────────────────────────────────
@@ -38,7 +40,9 @@ VOYAGE_MODEL    = "voyage-3"
 CLAUDE_MODEL    = "claude-sonnet-4-6"
 MIN_SCORE       = 0.35   # drop chunks below this cosine similarity
 MIN_CHUNKS      = 2      # if fewer pass threshold, return "not enough info"
-SOURCES_FILE    = Path(__file__).parent.parent / "corpus" / "tier1_sources.json"
+REPO_ROOT       = Path(__file__).parent.parent
+SOURCES_FILE    = REPO_ROOT / "corpus" / "tier1_sources.json"
+FRONTEND_DIR    = REPO_ROOT / "frontend"
 
 # ── Startup / client init ──────────────────────────────────────────────────────
 
@@ -69,6 +73,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── Static files & page routes ─────────────────────────────────────────────────
+
+app.mount("/frontend", StaticFiles(directory=str(FRONTEND_DIR)), name="frontend")
+
+
+@app.get("/ask", include_in_schema=False)
+def ask_page():
+    return FileResponse(str(FRONTEND_DIR / "ask.html"))
 
 # ── Request / response models ──────────────────────────────────────────────────
 
