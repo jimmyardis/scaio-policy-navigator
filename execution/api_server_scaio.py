@@ -37,7 +37,7 @@ from pydantic import BaseModel, Field
 # ── Config ─────────────────────────────────────────────────────────────────────
 
 VOYAGE_MODEL    = "voyage-3"
-CLAUDE_MODEL    = "claude-sonnet-4-6"
+CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
 MIN_SCORE       = 0.35   # drop chunks below this cosine similarity
 MIN_CHUNKS      = 2      # if fewer pass threshold, return "not enough info"
 REPO_ROOT       = Path(__file__).parent.parent
