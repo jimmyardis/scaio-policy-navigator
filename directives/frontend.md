@@ -87,15 +87,32 @@ Injects:
 2. On click: an iframe pointing at `widget.html`, 400×600px, positioned above the button
 3. Second click: toggles iframe visibility
 
-Drop on any page:
+The widget URL is resolved against **embed.js's own `src`**, not the host
+page — so a page on scaio.org loading embed.js from Railway gets the widget
+from Railway. Drop on any page:
 ```html
-<script src="/frontend/embed.js"></script>
+<script src="https://<navigator-host>/frontend/embed.js"></script>
 ```
 
-The script reads `data-widget-src` from its own `<script>` tag to allow custom widget URL:
+`data-widget-src` still overrides the resolved default:
 ```html
-<script src="/frontend/embed.js" data-widget-src="https://example.com/widget.html"></script>
+<script src="https://<navigator-host>/frontend/embed.js"
+        data-widget-src="https://example.com/widget.html"></script>
 ```
+
+### How scaio.org actually loads it
+
+The site does not reference the navigator host directly on each page. Every
+page loads a same-origin loader, `assets/navigator.js` in the `jimmyardis/scaio`
+repo, which injects the tag above:
+
+```html
+<script src="/assets/navigator.js" defer></script>
+```
+
+That loader holds `NAVIGATOR_ORIGIN` and is the single place to re-point the
+backend — e.g. switching from the Railway host to `ask.scaio.org` is a one-line
+edit there, not an edit to all 37 pages.
 
 ---
 
@@ -145,6 +162,11 @@ FastAPI server is configured with `allow_origins=["*"]` — no CORS issues expec
 
 ## Deploy checklist
 
-1. Update `API_BASE` in ask.html, widget.html, embed.js to Railway URL
-2. Serve static files from FastAPI with `app.mount("/", StaticFiles(directory="frontend"))` or deploy frontend separately (Vercel/Netlify)
-3. Update `data-widget-src` in any embed `<script>` tags to point to the deployed widget URL
+1. `API_BASE` stays empty in ask.html and widget.html — both are served by the
+   same FastAPI app that answers `/query`, so same-origin is correct.
+2. Static files are mounted at `/frontend` by `api_server_scaio.py`; `/ask`
+   serves ask.html directly.
+3. To re-point the site at a different navigator host, edit `NAVIGATOR_ORIGIN`
+   in `assets/navigator.js` in the `jimmyardis/scaio` repo — nothing else.
+4. Add the new host to `ALLOWED_ORIGINS` on the Railway service if page scripts
+   (not just the iframe) will call the API cross-origin.
