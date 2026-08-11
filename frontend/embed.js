@@ -1,7 +1,12 @@
 (() => {
-  const API_BASE   = '';  // empty = same origin
-  const script     = document.currentScript;
-  const widgetSrc  = script.getAttribute('data-widget-src') || '/frontend/widget.html';
+  const script = document.currentScript;
+
+  // Resolve the widget against this script's own URL, not the host page's.
+  // Embedded on scaio.org, a relative default would resolve to
+  // scaio.org/frontend/widget.html and 404 — the widget must come from
+  // whichever origin serves embed.js. `data-widget-src` still overrides.
+  const widgetSrc = script.getAttribute('data-widget-src')
+    || new URL('widget.html', script.src).href;
 
   const BTN_SIZE   = 60;
   const MARGIN     = 24;
@@ -38,8 +43,9 @@
     position:     'fixed',
     bottom:       (BTN_SIZE + MARGIN + 12) + 'px',
     right:        MARGIN + 'px',
-    width:        W_WIDTH + 'px',
-    height:       W_HEIGHT + 'px',
+    // Clamp to the viewport so the panel doesn't overflow on phones.
+    width:        `min(${W_WIDTH}px, calc(100vw - ${MARGIN * 2}px))`,
+    height:       `min(${W_HEIGHT}px, calc(100vh - ${BTN_SIZE + MARGIN * 2 + 24}px))`,
     border:       'none',
     borderRadius: '12px',
     boxShadow:    '0 14px 34px rgba(10,42,84,0.22)',
@@ -48,7 +54,6 @@
   });
   frame.src   = widgetSrc;
   frame.title = 'SC AI Policy Navigator';
-  frame.setAttribute('allow', 'same-origin');
 
   let open = false;
   btn.onclick = () => {

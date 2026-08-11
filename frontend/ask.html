@@ -612,7 +612,7 @@
       const res = await fetch(`${API_BASE}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, top_k: 8, include_sources: true }),
+        body: JSON.stringify({ question: q, top_k: 12, include_sources: true }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();

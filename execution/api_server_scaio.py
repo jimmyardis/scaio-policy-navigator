@@ -5,7 +5,7 @@ SCAIO Policy Navigator — FastAPI RAG Query Server
 3-layer architecture:
   Layer 1: Retrieve — embed query via Voyage AI, fetch top-k from Pinecone
   Layer 2: Augment  — deduplicate, filter by score, build context block
-  Layer 3: Generate — Claude claude-sonnet-4-6 answers from context only
+  Layer 3: Generate — Claude answers from context only (model: CLAUDE_MODEL)
 
 Run:
     source venv/bin/activate
@@ -67,10 +67,27 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# The embedded widget runs in an iframe served from this origin, so it calls
+# /query same-origin and needs no CORS grant. These entries cover direct calls
+# from scaio.org page scripts and local development. Override in Railway with
+# a comma-separated ALLOWED_ORIGINS if the site moves.
+DEFAULT_ORIGINS = [
+    "https://www.scaio.org",
+    "https://scaio.org",
+    "https://ask.scaio.org",
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
+]
+ALLOWED_ORIGINS = [
+    o.strip() for o in
+    os.environ.get("ALLOWED_ORIGINS", ",".join(DEFAULT_ORIGINS)).split(",")
+    if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -87,7 +104,7 @@ def ask_page():
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=5, max_length=1000)
-    top_k: int = Field(default=8, ge=1, le=20)
+    top_k: int = Field(default=12, ge=1, le=20)
     tier_filter: Optional[int] = Field(default=None, description="1, 2, or 3")
     include_sources: bool = True
 

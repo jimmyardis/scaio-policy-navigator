@@ -6,16 +6,29 @@
     "local_path": null,
     "tier": 1,
     "date": "2024",
-    "tags": ["ai-strategy", "state-government", "itmo", "oed"]
+    "tags": [
+      "ai-strategy",
+      "state-government",
+      "itmo",
+      "oed"
+    ],
+    "site_path": null,
+    "format": "pdf"
   },
   {
     "id": "sc-ai-symposium-scra",
-    "title": "SCRA — SC AI Report & Symposium",
+    "title": "SCRA \u2014 SC AI Report & Symposium",
     "url": "https://scra.org/scra-releases-report-on-ai-for-the-state-of-south-carolina/",
     "local_path": null,
     "tier": 1,
     "date": "2024",
-    "tags": ["ai-strategy", "symposium", "scra"]
+    "tags": [
+      "ai-strategy",
+      "symposium",
+      "scra"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "scra-ai-hub",
@@ -24,7 +37,12 @@
     "local_path": null,
     "tier": 1,
     "date": null,
-    "tags": ["ai-strategy", "scra"]
+    "tags": [
+      "ai-strategy",
+      "scra"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "sc-house-ai-committee",
@@ -33,69 +51,612 @@
     "local_path": null,
     "tier": 1,
     "date": null,
-    "tags": ["legislation", "committee"]
+    "tags": [
+      "legislation",
+      "committee"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "sc-h5253-ai-education",
-    "title": "SC H.5253 — AI in Education (126th Session)",
+    "title": "SC H.5253 \u2014 AI in Education (126th Session)",
     "url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/5253.htm",
     "local_path": null,
     "tier": 1,
     "date": "2025",
-    "tags": ["legislation", "education", "ai-policy"]
+    "tags": [
+      "legislation",
+      "education",
+      "ai-policy"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "sc-s443-health-claims-ai",
-    "title": "SC S.443 — Health Claims & AI",
+    "title": "SC S.443 \u2014 Health Claims & AI",
     "url": "https://www.scstatehouse.gov/sess126_2025-2026/bills/443.htm",
     "local_path": null,
     "tier": 1,
     "date": "2025",
-    "tags": ["legislation", "health", "ai-policy"]
+    "tags": [
+      "legislation",
+      "health",
+      "ai-policy"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "govtech-sc-ai-center-excellence",
-    "title": "GovTech — SC AI Center of Excellence",
+    "title": "GovTech \u2014 SC AI Center of Excellence",
     "url": "https://www.govtech.com/artificial-intelligence/south-carolina-prepares-to-launch-ai-center-of-excellence",
     "local_path": null,
     "tier": 1,
     "date": "2024",
-    "tags": ["ai-strategy", "center-of-excellence", "govtech"]
+    "tags": [
+      "ai-strategy",
+      "center-of-excellence",
+      "govtech"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "govtech-sc-ai-cyber-initiatives",
-    "title": "GovTech — SC AI Cyber Initiatives",
+    "title": "GovTech \u2014 SC AI Cyber Initiatives",
     "url": "https://www.govtech.com/artificial-intelligence/south-carolina-ai-cyber-initiatives-reshape-services",
     "local_path": null,
     "tier": 1,
     "date": "2024",
-    "tags": ["cybersecurity", "ai-policy", "govtech"]
-  },
-  {
-    "id": "scaio-home",
-    "title": "SCAIO — Full Site (scaio.org)",
-    "url": "https://scaio.org",
-    "local_path": null,
-    "tier": 1,
-    "date": null,
-    "tags": ["scaio", "about", "ecosystem", "policy", "research"]
+    "tags": [
+      "cybersecurity",
+      "ai-policy",
+      "govtech"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "usc-aii-center",
-    "title": "USC AI Institute (AII) — Research Center",
+    "title": "USC AI Institute (AII) \u2014 Research Center",
     "url": "https://research.cec.sc.edu/aii/",
     "local_path": null,
     "tier": 1,
     "date": null,
-    "tags": ["research", "usc", "ai-institute"]
+    "tags": [
+      "research",
+      "usc",
+      "ai-institute"
+    ],
+    "site_path": null,
+    "format": "html"
   },
   {
     "id": "sc-epscor-adapt",
-    "title": "SC EPSCoR — ADAPT in SC AI Program",
+    "title": "SC EPSCoR \u2014 ADAPT in SC AI Program",
     "url": "https://scepscor.org/adapt-in-sc-overview/",
     "local_path": null,
     "tier": 1,
     "date": null,
-    "tags": ["research", "epscor", "ai-education"]
+    "tags": [
+      "research",
+      "epscor",
+      "ai-education"
+    ],
+    "site_path": null,
+    "format": "html"
+  },
+  {
+    "id": "site-briefs-home",
+    "title": "Policy Briefs \u2014 scaio.org",
+    "url": "https://www.scaio.org/briefs/index.html",
+    "local_path": null,
+    "site_path": "briefs/index.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-briefs-intentional-by-design",
+    "title": "Policy Brief \u2014 Intentional by Design \u2014 scaio.org",
+    "url": "https://www.scaio.org/briefs/intentional-by-design.html",
+    "local_path": null,
+    "site_path": "briefs/intentional-by-design.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-home",
+    "title": "SCAIO \u2014 South Carolina Artificial Intelligence Observatory \u2014 scaio.org",
+    "url": "https://www.scaio.org/index.html",
+    "local_path": null,
+    "site_path": "index.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-home",
+    "title": "SCAIO Learn \u2014 AI Literacy Primers for South Carolina \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/index.html",
+    "local_path": null,
+    "site_path": "learn/index.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-01-llm",
+    "title": "Primer 01 \u2014 What is an LLM? \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-01-llm.html",
+    "local_path": null,
+    "site_path": "learn/primer-01-llm.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-02-schools",
+    "title": "Primer 02 \u2014 AI in SC Schools \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-02-schools.html",
+    "local_path": null,
+    "site_path": "learn/primer-02-schools.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-03-procurement",
+    "title": "Primer 03 \u2014 AI Procurement for SC Government \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-03-procurement.html",
+    "local_path": null,
+    "site_path": "learn/primer-03-procurement.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-04-synthetic-media",
+    "title": "Primer 04 \u2014 Spotting Synthetic Media \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-04-synthetic-media.html",
+    "local_path": null,
+    "site_path": "learn/primer-04-synthetic-media.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-05-small-business",
+    "title": "Primer 05 \u2014 AI for SC Small Businesses \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-05-small-business.html",
+    "local_path": null,
+    "site_path": "learn/primer-05-small-business.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-06-healthcare",
+    "title": "Primer 06 \u2014 Healthcare AI in South Carolina \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-06-healthcare.html",
+    "local_path": null,
+    "site_path": "learn/primer-06-healthcare.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-07-manufacturing",
+    "title": "Primer 07 \u2014 AI in SC Manufacturing \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-07-manufacturing.html",
+    "local_path": null,
+    "site_path": "learn/primer-07-manufacturing.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-08-local-gov",
+    "title": "Primer 08 \u2014 AI for SC Local Government \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-08-local-gov.html",
+    "local_path": null,
+    "site_path": "learn/primer-08-local-gov.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-09-legislator-glossary",
+    "title": "Primer 09 \u2014 A Legislator's AI Glossary \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-09-legislator-glossary.html",
+    "local_path": null,
+    "site_path": "learn/primer-09-legislator-glossary.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-10-sc-landscape",
+    "title": "Primer 10 \u2014 The South Carolina AI Landscape \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-10-sc-landscape.html",
+    "local_path": null,
+    "site_path": "learn/primer-10-sc-landscape.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-learn-primer-safety-vocabulary",
+    "title": "Primer \u2014 Safety, Alignment, Governance, Regulation \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-safety-vocabulary.html",
+    "local_path": null,
+    "site_path": "learn/primer-safety-vocabulary.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-policy-home",
+    "title": "South Carolina AI Policy Database \u2014 scaio.org",
+    "url": "https://www.scaio.org/policy/index.html",
+    "local_path": null,
+    "site_path": "policy/index.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-00-executive-summary",
+    "title": "Executive Summary \u00b7 The AI Landscape of South Carolina \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-00-executive-summary.html",
+    "local_path": null,
+    "site_path": "report/chapter-00-executive-summary.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-01-the-setting",
+    "title": "Chapter 1 \u2014 South Carolina at the AI Inflection Point \u00b7 SCAIO Flagship Report \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-01-the-setting.html",
+    "local_path": null,
+    "site_path": "report/chapter-01-the-setting.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-02-the-ecosystem",
+    "title": "Chapter 2 \u2014 The Ecosystem \u00b7 SCAIO Flagship Report \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-02-the-ecosystem.html",
+    "local_path": null,
+    "site_path": "report/chapter-02-the-ecosystem.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-03-the-industries",
+    "title": "Chapter 3 \u2014 The Industries \u00b7 SCAIO Flagship Report \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-03-the-industries.html",
+    "local_path": null,
+    "site_path": "report/chapter-03-the-industries.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-04-the-workforce",
+    "title": "Chapter 4 \u2014 The Workforce \u00b7 SCAIO Flagship Report \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-04-the-workforce.html",
+    "local_path": null,
+    "site_path": "report/chapter-04-the-workforce.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-05-the-infrastructure",
+    "title": "Chapter 5 \u2014 The Infrastructure \u00b7 SCAIO Flagship Report \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-05-the-infrastructure.html",
+    "local_path": null,
+    "site_path": "report/chapter-05-the-infrastructure.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-06-the-policy-landscape",
+    "title": "Chapter 6 \u2014 The Policy Landscape \u00b7 SCAIO Flagship Report \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-06-the-policy-landscape.html",
+    "local_path": null,
+    "site_path": "report/chapter-06-the-policy-landscape.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-07-risks-and-opportunities",
+    "title": "Chapter 7 \u2014 Risks and Opportunities \u00b7 The AI Landscape of South Carolina \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-07-risks-and-opportunities.html",
+    "local_path": null,
+    "site_path": "report/chapter-07-risks-and-opportunities.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-08-a-path-forward",
+    "title": "Chapter 8 \u2014 A Path Forward \u00b7 The AI Landscape of South Carolina \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-08-a-path-forward.html",
+    "local_path": null,
+    "site_path": "report/chapter-08-a-path-forward.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-chapter-09-methodology",
+    "title": "Chapter 9 \u2014 Methodology and Sources \u00b7 The AI Landscape of South Carolina \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/chapter-09-methodology.html",
+    "local_path": null,
+    "site_path": "report/chapter-09-methodology.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-report-home",
+    "title": "The Artificial Intelligence Landscape of South Carolina \u2014 scaio.org",
+    "url": "https://www.scaio.org/report/index.html",
+    "local_path": null,
+    "site_path": "report/index.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-safety-home",
+    "title": "AI Safety & Governance \u2014 scaio.org",
+    "url": "https://www.scaio.org/safety/index.html",
+    "local_path": null,
+    "site_path": "safety/index.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-between-doom-and-denial",
+    "title": "Between Doom and Denial \u2014 How SCAIO Thinks About AI Risk \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-between-doom-and-denial.html",
+    "local_path": null,
+    "site_path": "scaio-article-between-doom-and-denial.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-cybersecurity",
+    "title": "AI, Cybersecurity, and Public Risk in the Palmetto State \u2014 SCAIO Journal \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-cybersecurity.html",
+    "local_path": null,
+    "site_path": "scaio-article-cybersecurity.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-data-center-decade",
+    "title": "South Carolina's Data-Center Decade \u2014 SCAIO Journal \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-data-center-decade.html",
+    "local_path": null,
+    "site_path": "scaio-article-data-center-decade.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-manufacturing",
+    "title": "What AI Means for South Carolina Manufacturing \u2014 SCAIO Journal \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-manufacturing.html",
+    "local_path": null,
+    "site_path": "scaio-article-manufacturing.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-map-of-ai-risk",
+    "title": "A Plain-Language Map of AI Risk \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-map-of-ai-risk.html",
+    "local_path": null,
+    "site_path": "scaio-article-map-of-ai-risk.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-quiet-reset-procurement",
+    "title": "The Quiet Reset in South Carolina's Consulting Bill \u2014 SCAIO Journal \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-quiet-reset-procurement.html",
+    "local_path": null,
+    "site_path": "scaio-article-quiet-reset-procurement.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-why-scaio",
+    "title": "Why South Carolina Needs an AI Observatory \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-why-scaio.html",
+    "local_path": null,
+    "site_path": "scaio-article-why-scaio.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-workforce-exposure",
+    "title": "The Gap Between What AI Can Do and What It Is Doing \u2014 SCAIO Journal \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-workforce-exposure.html",
+    "local_path": null,
+    "site_path": "scaio-article-workforce-exposure.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "site-article-workforce-what-we-know",
+    "title": "What We Know \u2014 and Don't \u2014 About AI's Effect on South Carolina Workers \u00b7 SCAIO Journal \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-workforce-what-we-know.html",
+    "local_path": null,
+    "site_path": "scaio-article-workforce-what-we-know.html",
+    "format": "html",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
+    "id": "scaio-bills",
+    "title": "SCAIO Bill Tracker (bills.json)",
+    "url": "https://www.scaio.org/policy/",
+    "local_path": null,
+    "site_path": "bills.json",
+    "format": "json_bills",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site",
+      "legislation",
+      "tracker"
+    ]
+  },
+  {
+    "id": "scaio-developments",
+    "title": "SCAIO Policy Developments Tracker (policy-developments.json)",
+    "url": "https://www.scaio.org/policy/",
+    "local_path": null,
+    "site_path": "policy-developments.json",
+    "format": "json_developments",
+    "tier": 1,
+    "date": null,
+    "tags": [
+      "scaio-site",
+      "policy",
+      "tracker"
+    ]
   }
 ]

@@ -37,6 +37,11 @@ EMBED_DIM      = 1024
 
 SOURCES_FILE = Path(__file__).parent.parent / "corpus" / "tier1_sources.json"
 
+# Local checkout of the scaio.org site repo (jimmyardis/scaio). Sources with a
+# `site_path` are read from here rather than fetched over HTTP, so ingestion
+# tracks `main` instead of whatever GitHub Pages happens to be serving.
+SITE_ROOT = Path(os.environ.get("SCAIO_SITE_ROOT", Path.home() / "scaio"))
+
 # ── Imports after config (give dotenv a chance to run) ─────────────────────────
 
 import tiktoken
@@ -157,10 +162,130 @@ def extract_pdf_local(path: str) -> str | None:
         return None
 
 
-def fetch_source(source: dict) -> str | None:
-    """Route fetch based on source type."""
-    url = source.get("url", "")
+def extract_html_local(path: Path) -> str | None:
+    """Extract readable text from a local HTML file."""
+    try:
+        html = path.read_text(encoding="utf-8", errors="replace")
+        text = trafilatura.extract(
+            html,
+            include_tables=True,
+            include_links=False,
+            no_fallback=False,
+        )
+        if text and len(text.strip()) > 200:
+            return text.strip()
+        print(f"  [SKIP] empty content after extract: {path}")
+        return None
+    except Exception as e:
+        print(f"  [WARN] local HTML read failed for {path}: {e}")
+        return None
+
+
+# ── JSON trackers ──────────────────────────────────────────────────────────────
+#
+# bills.json and policy-developments.json drive the /policy tracker client-side,
+# so HTML extraction sees an empty page. These build one self-contained record
+# per bill / development instead of chunking a blob, and each record carries its
+# own citation metadata so the retriever treats bills as independent sources
+# rather than collapsing them under one per-source cap.
+
+def _fmt(label: str, value) -> str:
+    if not value:
+        return ""
+    if isinstance(value, list):
+        value = ", ".join(str(v) for v in value)
+    return f"{label}: {value}\n"
+
+
+def build_bill_records(data: dict, source: dict) -> list[dict]:
+    session = data.get("session", "")
+    note    = data.get("session_note", "")
+    updated = data.get("last_updated", "")
+    records = []
+
+    for bill in data.get("bills", []):
+        num   = bill.get("bill_number", "")
+        title = bill.get("title", "")
+        text = (
+            f"South Carolina AI legislation tracker — {num}: {title}\n"
+            f"Session: {session}\n"
+            + _fmt("Status", bill.get("status"))
+            + _fmt("Last action", bill.get("last_action_date"))
+            + _fmt("Sponsors", bill.get("sponsors"))
+            + _fmt("Impact score (1-10)", bill.get("impact_score"))
+            + f"\n{bill.get('summary', '')}\n"
+            + (f"\n{bill.get('explanation', '')}\n" if bill.get("explanation") else "")
+            + f"\nSession note: {note}\n"
+            f"Tracker last updated: {updated}"
+        )
+        records.append({
+            "text":      text.strip(),
+            "record_id": f"{source['id']}-{num.replace('.', '').lower()}",
+            "title":     f"SCAIO Bill Tracker — {num} {title}",
+            "url":       bill.get("url") or source.get("url", ""),
+            "date":      bill.get("last_action_date", ""),
+        })
+    return records
+
+
+def build_development_records(data: dict, source: dict) -> list[dict]:
+    updated = data.get("last_updated", "")
+    records = []
+
+    for dev in data.get("developments", []):
+        text = (
+            f"South Carolina AI policy development — {dev.get('title', '')}\n"
+            + _fmt("Type", dev.get("type_label") or dev.get("type"))
+            + _fmt("Date", dev.get("date_label") or dev.get("date"))
+            + _fmt("Status", dev.get("status"))
+            + _fmt("Issuing body", dev.get("source"))
+            + f"\n{dev.get('summary', '')}\n"
+            f"\nTracker last updated: {updated}"
+        )
+        records.append({
+            "text":      text.strip(),
+            "record_id": f"{source['id']}-{dev.get('id', len(records))}",
+            "title":     f"SCAIO Policy Tracker — {dev.get('title', '')}",
+            "url":       dev.get("url") or source.get("url", ""),
+            "date":      dev.get("date", ""),
+        })
+    return records
+
+
+JSON_BUILDERS = {
+    "json_bills":        build_bill_records,
+    "json_developments": build_development_records,
+}
+
+
+def fetch_source(source: dict) -> str | list[dict] | None:
+    """
+    Route fetch based on source type.
+
+    Returns raw text (to be chunked), a list of pre-formed record dicts
+    (already chunk-sized, with their own citation metadata), or None.
+    """
+    url        = source.get("url", "")
     local_path = source.get("local_path")
+    site_path  = source.get("site_path")
+    fmt        = source.get("format", "")
+
+    if fmt in JSON_BUILDERS:
+        path = SITE_ROOT / site_path if site_path else None
+        try:
+            if path:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            else:
+                resp = requests.get(url, headers=HEADERS, timeout=30)
+                resp.raise_for_status()
+                data = resp.json()
+        except Exception as e:
+            print(f"  [WARN] JSON load failed for {site_path or url}: {e}")
+            return None
+        return JSON_BUILDERS[fmt](data, source)
+
+    if site_path:
+        return extract_html_local(SITE_ROOT / site_path)
 
     if local_path:
         return extract_pdf_local(local_path)
@@ -217,27 +342,43 @@ def embed_texts(vc: voyageai.Client, texts: list[str]) -> list[list[float]]:
 def upsert_chunks(
     index,
     source: dict,
-    chunks: list[str],
+    chunks: list,
     embeddings: list[list[float]],
 ):
-    """Upsert chunk vectors into Pinecone."""
+    """
+    Upsert chunk vectors into Pinecone.
+
+    `chunks` is either a list of plain strings (chunked prose) or a list of
+    record dicts from a JSON tracker, which carry their own id/title/url and
+    are indexed as independent sources.
+    """
     vectors = []
     for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
-        vec_id = f"{source['id']}_chunk_{i:04d}"
-        vectors.append({
-            "id": vec_id,
-            "values": emb,
-            "metadata": {
+        if isinstance(chunk, dict):
+            vec_id = chunk["record_id"]
+            meta = {
+                "source_id":    chunk["record_id"],
+                "source_title": chunk["title"],
+                "source_url":   chunk.get("url", ""),
+                "date":         chunk.get("date") or "",
+                "text":         chunk["text"],
+            }
+        else:
+            vec_id = f"{source['id']}_chunk_{i:04d}"
+            meta = {
                 "source_id":    source["id"],
                 "source_title": source["title"],
                 "source_url":   source.get("url", ""),
                 "date":         source.get("date") or "",
-                "tier":         source.get("tier", 1),
-                "chunk_index":  i,
-                "chunk_total":  len(chunks),
                 "text":         chunk,
-            },
+            }
+
+        meta.update({
+            "tier":        source.get("tier", 1),
+            "chunk_index": i,
+            "chunk_total": len(chunks),
         })
+        vectors.append({"id": vec_id, "values": emb, "metadata": meta})
 
     for i in range(0, len(vectors), UPSERT_BATCH):
         batch = vectors[i : i + UPSERT_BATCH]
@@ -252,6 +393,30 @@ def upsert_chunks(
                     time.sleep(2 ** attempt)
 
 # ── Existing ID check ──────────────────────────────────────────────────────────
+
+def prune_source(index, source_id: str) -> int:
+    """
+    Delete every existing vector belonging to a source before re-upserting it.
+
+    Both id schemes are prefixed with the source id, so a prefix list covers
+    prose chunks and JSON records alike. Without this, a page that shrinks (or
+    a bill dropped from the tracker) leaves orphan vectors behind forever.
+    """
+    # Both prefixes end in a separator so sibling ids that merely start with
+    # this source id (site-report vs site-report-chapter-01) are never caught.
+    try:
+        stale = []
+        for prefix in (f"{source_id}_chunk_", f"{source_id}-"):
+            for page in index.list(prefix=prefix, limit=99):
+                stale.extend(page if isinstance(page, list) else [page])
+        if stale:
+            for i in range(0, len(stale), UPSERT_BATCH):
+                index.delete(ids=stale[i : i + UPSERT_BATCH])
+        return len(stale)
+    except Exception as e:
+        print(f"  [WARN] prune failed for {source_id}: {e}")
+        return 0
+
 
 def source_exists_in_pinecone(index, source_id: str) -> bool:
     """Check if at least one chunk for this source_id exists in Pinecone."""
@@ -317,38 +482,47 @@ def main():
                 continue
 
         # Fetch
-        text = fetch_source(source)
-        if not text:
+        fetched = fetch_source(source)
+        if not fetched:
             print("  [SKIP] no content extracted")
             continue
-        print(f"  fetched {len(text):,} chars")
 
-        # Chunk
-        chunks = chunk_text(text)
-        print(f"  chunked into {len(chunks)} pieces ({CHUNK_TOKENS}t / {OVERLAP_TOKENS}t overlap)")
+        # JSON trackers arrive pre-chunked as records; prose gets chunked here.
+        if isinstance(fetched, list):
+            chunks = fetched
+            print(f"  built {len(chunks)} records (one per tracker entry)")
+        else:
+            print(f"  fetched {len(fetched):,} chars")
+            chunks = chunk_text(fetched)
+            print(f"  chunked into {len(chunks)} pieces ({CHUNK_TOKENS}t / {OVERLAP_TOKENS}t overlap)")
+
+        sample = chunks[0]["text"] if isinstance(chunks[0], dict) else chunks[0]
 
         if args.dry_run:
             print(f"  [DRY RUN] sample chunk 0:")
-            print(f"    {chunks[0][:300]}...")
+            print(f"    {sample[:300]}...")
             total_chunks += len(chunks)
             continue
 
         # Embed
         print(f"  embedding via {VOYAGE_MODEL}...")
-        embeddings = embed_texts(vc, chunks)
+        texts = [c["text"] if isinstance(c, dict) else c for c in chunks]
+        embeddings = embed_texts(vc, texts)
         print(f"  embedded {len(embeddings)} vectors (dim={len(embeddings[0])})")
 
-        # Upsert
+        # Replace any prior vectors for this source, then upsert
+        removed = prune_source(index, source["id"])
+        if removed:
+            print(f"  pruned {removed} stale vectors")
         upsert_chunks(index, source, chunks, embeddings)
         print(f"  upserted {len(chunks)} vectors to Pinecone")
 
         # Print sample chunk metadata
         print(f"\n  --- SAMPLE CHUNK 0 ---")
-        print(f"  id:    {source['id']}_chunk_0000")
         print(f"  title: {source['title']}")
         print(f"  tier:  {source['tier']}  date: {source.get('date', '')}")
-        print(f"  tokens: ~{CHUNK_TOKENS}  dim: {len(embeddings[0])}")
-        print(f"  text:  {chunks[0][:400]}...")
+        print(f"  dim:   {len(embeddings[0])}")
+        print(f"  text:  {sample[:400]}...")
 
         total_chunks += len(chunks)
 
