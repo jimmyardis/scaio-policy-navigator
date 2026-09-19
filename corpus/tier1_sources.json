@@ -344,6 +344,19 @@
     ]
   },
   {
+    "id": "site-primer-alignment-research",
+    "title": "Primer \u2014 What Alignment Research Actually Is \u00b7 SCAIO Learn \u2014 scaio.org",
+    "url": "https://www.scaio.org/learn/primer-alignment-research.html",
+    "local_path": null,
+    "site_path": "learn/primer-alignment-research.html",
+    "format": "html",
+    "tier": 1,
+    "date": "2026-09-19",
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
     "id": "site-policy-home",
     "title": "South Carolina AI Policy Database \u2014 scaio.org",
     "url": "https://www.scaio.org/policy/index.html",
