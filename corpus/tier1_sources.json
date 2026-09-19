@@ -630,6 +630,19 @@
     ]
   },
   {
+    "id": "site-article-everywhere-at-once",
+    "title": "Everywhere at Once: What South Carolina's AI Committee Is Really Up Against \u2014 scaio.org",
+    "url": "https://www.scaio.org/scaio-article-everywhere-at-once.html",
+    "local_path": null,
+    "site_path": "scaio-article-everywhere-at-once.html",
+    "format": "html",
+    "tier": 1,
+    "date": "2026-09-18",
+    "tags": [
+      "scaio-site"
+    ]
+  },
+  {
     "id": "scaio-bills",
     "title": "SCAIO Bill Tracker (bills.json)",
     "url": "https://www.scaio.org/policy/",
