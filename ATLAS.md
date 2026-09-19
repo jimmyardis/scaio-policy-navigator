@@ -10,7 +10,7 @@
 | **Project** | SCAIO Policy Navigator |
 | **One-liner** | SC AI policy navigator RAG chatbot over 11 SC government policy sources |
 | **Status** | shipping |
-| **Last Active** | 2026-08-10 |
+| **Last Active** | 2026-09-19 |
 | **Stall Threshold** | 14 days |
 | **Repo** | https://github.com/jimmyardis/scaio-policy-navigator |
 | **Site repo** | https://github.com/jimmyardis/scaio (GitHub Pages → www.scaio.org) |
@@ -22,7 +22,12 @@
 **Deployed on scaio.org.** The chat bubble is live on all 37 pages, verified
 end-to-end in a browser on desktop and mobile against the live site.
 
-Corpus went from 11 external sources (37 vectors) to 47 sources (179 vectors).
+Corpus is 48 sources (~182 vectors) after adding the "Everywhere at Once"
+article (2026-09-19). The site repo now also carries the SCAIO content agent
+(`jimmyardis/scaio` → `execution/`, `directives/scaio_content_agent.md`), which
+drafts posts as PRs; its Phase 3 will feed merged posts into this corpus.
+
+Corpus history: 11 external sources (37 vectors) → 47 sources (179 vectors).
 scaio.org itself had only ever been indexed as 3 chunks of a March homepage
 fetch — the flagship report, primers, articles, briefs and safety pages were
 absent entirely, and the bill tracker was invisible because /policy renders
@@ -52,6 +57,21 @@ hostname to `https://ask.scaio.org`.
 ## Session Log
 
 <!-- Append-only. Most recent session on top. Claude Code adds an entry at the end of each work session. -->
+
+### 2026-09-19
+
+- Published "Everywhere at Once" (SC Senate AI committee commentary) on
+  scaio.org in the journal template; added it to `corpus/tier1_sources.json`
+  and ingested (3 vectors) plus re-ingested `site-home` (5). Verified live:
+  `/query` about the committee chair answers from the new article.
+- Built the SCAIO content agent in the **site** repo (not here): monitor →
+  fact-verified draft → PR → Telegram digest; LinkedIn/Facebook posting on
+  merge, dormant until credentials exist. Test PR jimmyardis/scaio#1.
+- Gotcha: `gh auth token` returns `$GITHUB_TOKEN` when set, and `~/.env`'s
+  GITHUB_TOKEN is stale for these repos — pushes here need
+  `env -u GITHUB_TOKEN` or the gh credential helper.
+- Left for later: content-agent Phase 3 (auto-ingest merged posts here) —
+  directive says ask before changing the Railway deployment.
 
 ### 2026-08-10
 
