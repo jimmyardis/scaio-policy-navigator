@@ -32,7 +32,7 @@
     justifyContent: 'center',
     transition:   'transform 0.15s, box-shadow 0.15s',
   });
-  btn.setAttribute('aria-label', 'Open SC AI Policy Navigator');
+  btn.setAttribute('aria-label', "Open Sky — SCAIO’s AI guide");
   btn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
   btn.onmouseenter = () => { btn.style.transform = 'scale(1.08)'; btn.style.boxShadow = '0 18px 40px rgba(10,42,84,0.36)'; };
   btn.onmouseleave = () => { btn.style.transform = 'scale(1)';    btn.style.boxShadow = '0 14px 34px rgba(10,42,84,0.28)'; };
@@ -53,7 +53,7 @@
     display:      'none',
   });
   frame.src   = widgetSrc;
-  frame.title = 'SC AI Policy Navigator';
+  frame.title = "Sky — SCAIO’s AI guide";
 
   let open = false;
   btn.onclick = () => {

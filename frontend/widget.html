@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SC AI Policy Navigator</title>
+  <title>Sky · SCAIO</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
@@ -253,14 +253,14 @@
   <div class="widget-header">
     <div class="dot-online"></div>
     <div>
-      <div class="title">SC AI Policy Navigator</div>
-      <div class="subtitle">Answers from official SC sources</div>
+      <div class="title">Sky</div>
+      <div class="subtitle">SCAIO’s AI guide to South Carolina</div>
     </div>
   </div>
 
   <!-- Thread -->
   <div class="thread" id="thread">
-    <div class="intro">Ask me about SC AI legislation, state strategy, or the policy ecosystem. I'll cite my sources.</div>
+    <div class="intro">I’m Sky. Ask me about AI in South Carolina — legislation, the flagship report, the primers, or anything else SCAIO has published. I’ll cite my sources.</div>
     <div class="chips" id="chips">
       <button class="chip" onclick="submitChip(this)">What is SC's AI strategy?</button>
       <button class="chip" onclick="submitChip(this)">What AI bills are active?</button>
@@ -271,7 +271,7 @@
 
   <!-- Input -->
   <div class="input-bar">
-    <textarea id="question" placeholder="Ask about SC AI policy…" rows="1"></textarea>
+    <textarea id="question" placeholder="Ask Sky about AI in South Carolina…" rows="1"></textarea>
     <button id="send-btn" onclick="sendQuestion()" aria-label="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="22" y1="2" x2="11" y2="13"/>
@@ -284,6 +284,12 @@
 
 <script>
   const API_BASE = '';  // empty = same origin; works locally via FastAPI and on Railway
+
+  // Recent turns, oldest first. Sent with each question so follow-ups ("what did you
+  // mean?", "you said 9 but listed 10") have something to resolve against — the backend
+  // caps this again on its side.
+  const MAX_HISTORY = 6;
+  let history = [];
 
   const qa = document.getElementById('question');
   qa.addEventListener('input', () => {
@@ -381,10 +387,15 @@
       const res = await fetch(`${API_BASE}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, top_k: 12, include_sources: true }),
+        body: JSON.stringify({ question: q, top_k: 12, include_sources: true, history }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      replaceWithAnswer(typingEl, await res.json());
+      const data = await res.json();
+      history = history.concat(
+        { role: 'user', content: q },
+        { role: 'assistant', content: data.answer },
+      ).slice(-MAX_HISTORY);
+      replaceWithAnswer(typingEl, data);
     } catch {
       typingEl.className = 'msg asst no-info';
       typingEl.innerHTML = `<div class="bubble">Could not reach the server. Please try again.</div>`;

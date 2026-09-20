@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SCAIO Policy Navigator — FastAPI RAG Query Server
+Sky — SCAIO's AI guide · FastAPI RAG Query Server
 
 3-layer architecture:
   Layer 1: Retrieve — embed query via Voyage AI, fetch top-k from Pinecone
@@ -39,7 +39,8 @@ from pydantic import BaseModel, Field
 VOYAGE_MODEL    = "voyage-3"
 CLAUDE_MODEL    = "claude-haiku-4-5-20251001"
 MIN_SCORE       = 0.35   # drop chunks below this cosine similarity
-MIN_CHUNKS      = 2      # if fewer pass threshold, return "not enough info"
+MIN_CHUNKS      = 2      # if fewer pass threshold, return "not enough info" (first turn only)
+MAX_HISTORY_TURNS = 6    # prior turns replayed to Claude, newest kept
 REPO_ROOT       = Path(__file__).parent.parent
 SOURCES_FILE    = REPO_ROOT / "corpus" / "tier1_sources.json"
 FRONTEND_DIR    = REPO_ROOT / "frontend"
@@ -62,7 +63,7 @@ anthropic_client = Anthropic(api_key=_require("ANTHROPIC_API_KEY"))
 # ── App ────────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="SCAIO Policy Navigator",
+    title="Sky — SCAIO",
     description="RAG-powered Q&A over South Carolina AI policy corpus",
     version="1.0.0",
 )
@@ -102,8 +103,17 @@ def ask_page():
 
 # ── Request / response models ──────────────────────────────────────────────────
 
+class Turn(BaseModel):
+    role: str = Field(..., pattern="^(user|assistant)$")
+    content: str = Field(..., min_length=1, max_length=8000)
+
+
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=5, max_length=1000)
+    history: list[Turn] = Field(
+        default_factory=list,
+        description="Prior turns, oldest first. Only the last MAX_HISTORY_TURNS are used.",
+    )
     top_k: int = Field(default=12, ge=1, le=20)
     tier_filter: Optional[int] = Field(default=None, description="1, 2, or 3")
     include_sources: bool = True
@@ -182,30 +192,58 @@ def build_context(matches: list) -> tuple[str, list[SourceCitation]]:
 
 
 SYSTEM_PROMPT = """\
-You are the SCAIO Policy Navigator, an expert assistant on South Carolina artificial intelligence policy, legislation, and ecosystem.
+You are Sky, SCAIO's guide to South Carolina and artificial intelligence. SCAIO is the \
+South Carolina Artificial Intelligence Observatory. You answer from SCAIO's published work — \
+the flagship report, the primers, the journal, the policy briefs, the bill and policy trackers — \
+and from official South Carolina government sources.
 
-Answer questions using ONLY the information in the <context> block below. \
-If the context does not contain enough information to answer fully, say so clearly and specifically — do not speculate or draw on outside knowledge.
+Answer questions using ONLY the information in the <context> block below, together with what \
+has already been said earlier in this conversation. If the context does not contain enough \
+information to answer fully, say so clearly and specifically — do not speculate or draw on \
+outside knowledge.
 
 Cite the specific source(s) you draw from using [Source: Title] inline notation.
 
-Keep answers concise and factual. Use bullet points for lists of bills, initiatives, or agencies.\
+When you state a count, take it from what a source explicitly says. Do not tally items yourself \
+and report the total as fact — if you are listing things, let the list speak rather than \
+counting it. If a source gives a number that conflicts with the items you can see, say so \
+plainly instead of picking one.
+
+If the user is asking about the conversation itself — following up, correcting you, or asking \
+what you meant — answer from the conversation directly. If you got something wrong, say so \
+plainly and correct it; do not repeat the error and do not pretend the earlier turn did not happen.
+
+Keep answers concise and factual. Use bullet points for lists of bills, initiatives, or agencies. \
+If someone asks who or what you are: you are Sky, and you search SCAIO's published research to answer.\
 """
 
 
 def build_user_message(question: str, context: str) -> str:
+    if not context.strip():
+        context = (
+            "(No SCAIO sources matched this message. It is most likely a follow-up about "
+            "the conversation so far — answer from the earlier turns.)"
+        )
     return f"<context>\n{context}\n</context>\n\nQuestion: {question}"
 
 
 # ── Layer 3: Generate ──────────────────────────────────────────────────────────
 
-def generate(question: str, context: str) -> str:
-    """Call Claude with the augmented prompt."""
+def generate(question: str, context: str, history: list["Turn"]) -> str:
+    """Call Claude with the augmented prompt, preceded by recent conversation turns."""
+    messages = [{"role": t.role, "content": t.content} for t in history[-MAX_HISTORY_TURNS:]]
+
+    # Claude requires the first message to be from the user and roles to alternate.
+    while messages and messages[0]["role"] != "user":
+        messages.pop(0)
+
+    messages.append({"role": "user", "content": build_user_message(question, context)})
+
     message = anthropic_client.messages.create(
         model=CLAUDE_MODEL,
         max_tokens=1024,
         system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": build_user_message(question, context)}],
+        messages=messages,
     )
     return message.content[0].text
 
@@ -220,7 +258,11 @@ def query(req: QueryRequest):
     # Layer 2: Augment
     context, citations = build_context(matches)
 
-    if len(citations) < MIN_CHUNKS:
+    # A follow-up ("what do you mean?", "you said 9 but listed 10") rarely retrieves
+    # anything on its own, because it is embedded as a standalone search query. Bailing
+    # out here would answer every follow-up with the no-corpus line without ever asking
+    # Claude. Only short-circuit when there is no conversation to fall back on.
+    if len(citations) < MIN_CHUNKS and not req.history:
         return QueryResponse(
             answer=(
                 "I don't have enough information in the current corpus to answer that question. "
@@ -231,7 +273,7 @@ def query(req: QueryRequest):
         )
 
     # Layer 3: Generate
-    answer = generate(req.question, context)
+    answer = generate(req.question, context, req.history)
 
     if not req.include_sources:
         citations = []

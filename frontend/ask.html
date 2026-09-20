@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ask the SC AI Policy Navigator</title>
+  <title>Ask Sky · SCAIO</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
@@ -406,9 +406,9 @@
 
 <!-- ── Hero ── -->
 <section class="hero">
-  <span class="kicker">Policy Navigator</span>
-  <h1>Ask the SC AI Policy Navigator</h1>
-  <p>Get instant, cited answers about South Carolina's artificial intelligence legislation, state strategy, and policy ecosystem. Every answer is drawn directly from primary government sources — no guessing.</p>
+  <span class="kicker">Sky</span>
+  <h1>Ask Sky</h1>
+  <p>Sky is SCAIO’s AI guide to South Carolina. Ask about AI legislation, the flagship report, the primers, the journal, or the policy ecosystem — every answer is drawn from SCAIO’s published research and primary government sources, and cited. No guessing.</p>
 </section>
 
 <!-- ── How it works ── -->
@@ -437,7 +437,7 @@
 <!-- ── Corpus section ── -->
 <section class="section">
   <span class="kicker">Corpus</span>
-  <h2 class="section-title">What does this know?</h2>
+  <h2 class="section-title">What does Sky know?</h2>
   <div class="source-list" id="source-list">
     <span class="source-list-loading">Loading sources…</span>
   </div>
@@ -458,7 +458,7 @@
   <div class="thread" id="thread"></div>
 
   <div class="input-bar">
-    <textarea id="question" placeholder="Ask about SC AI policy…" rows="1"></textarea>
+    <textarea id="question" placeholder="Ask Sky about AI in South Carolina…" rows="1"></textarea>
     <button id="send-btn" onclick="sendQuestion()" aria-label="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="22" y1="2" x2="11" y2="13"/>
@@ -474,6 +474,10 @@
 
 <script>
   const API_BASE = '';  // empty = same origin; works locally via FastAPI and on Railway
+
+  // Recent turns, oldest first — lets Sky resolve follow-ups and corrections.
+  const MAX_HISTORY = 6;
+  let history = [];
 
   // ── Auto-resize textarea ──
   const qa = document.getElementById('question');
@@ -612,10 +616,14 @@
       const res = await fetch(`${API_BASE}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, top_k: 12, include_sources: true }),
+        body: JSON.stringify({ question: q, top_k: 12, include_sources: true, history }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      history = history.concat(
+        { role: 'user', content: q },
+        { role: 'assistant', content: data.answer },
+      ).slice(-MAX_HISTORY);
       replaceWithAnswer(typingEl, data);
     } catch (err) {
       typingEl.className = 'msg asst no-info';

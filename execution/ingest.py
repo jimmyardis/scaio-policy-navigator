@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SCAIO Policy Navigator — Corpus Ingestion Pipeline
+Sky — SCAIO's AI guide · Corpus Ingestion Pipeline
 
 Fetches each source (URL or PDF), chunks at 600 tokens with 100-token overlap,
 embeds via Voyage AI (voyage-3), and upserts to Pinecone index 'scaio-policy'.
@@ -162,10 +162,44 @@ def extract_pdf_local(path: str) -> str | None:
         return None
 
 
+def extract_structured_html(html: str) -> str | None:
+    """
+    Extract text from hand-authored SCAIO pages, keeping the heading hierarchy.
+
+    trafilatura is tuned for article bodies and discards headings that sit inside
+    link wrappers — which on scaio.org is every primer card title and every section
+    heading, including the ones that state how many primers exist. Those headings are
+    the highest-signal text on a hub page, so pull the document structure directly.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["script", "style", "nav", "footer", "svg", "noscript"]):
+        tag.decompose()
+
+    root = soup.find("main") or soup.body or soup
+    lines: list[str] = []
+    for el in root.find_all(["h1", "h2", "h3", "h4", "p", "li", "td", "blockquote"]):
+        text = " ".join(el.get_text(" ", strip=True).split())
+        if not text:
+            continue
+        if el.name in ("h1", "h2", "h3", "h4"):
+            text = "#" * int(el.name[1]) + " " + text
+        # Nested elements (a <p> inside an <li>) surface the same string twice.
+        if lines and lines[-1] == text:
+            continue
+        lines.append(text)
+
+    return "\n".join(lines) if lines else None
+
+
 def extract_html_local(path: Path) -> str | None:
     """Extract readable text from a local HTML file."""
     try:
         html = path.read_text(encoding="utf-8", errors="replace")
+
+        text = extract_structured_html(html)
+        if text and len(text.strip()) > 200:
+            return text.strip()
+
         text = trafilatura.extract(
             html,
             include_tables=True,
