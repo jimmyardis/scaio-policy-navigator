@@ -218,11 +218,30 @@ If someone asks who or what you are: you are Sky, and you search SCAIO's publish
 """
 
 
+# Questions about Sky itself retrieve nothing — the corpus describes South Carolina,
+# not the assistant — so without this they would hit the no-corpus short-circuit and
+# Sky would fail to answer "who are you?", which is a common opening message.
+META_QUESTION_PATTERNS = (
+    "who are you", "what are you", "who r u", "what is sky", "who is sky",
+    "what can you do", "what can you help", "what do you do", "how do you work",
+    "what is this", "what are your sources", "what do you know",
+    "your name", "introduce yourself",
+)
+
+
+def is_meta_question(question: str) -> bool:
+    """True if the user is asking about Sky rather than about South Carolina."""
+    q = question.lower()
+    return any(p in q for p in META_QUESTION_PATTERNS)
+
+
 def build_user_message(question: str, context: str) -> str:
     if not context.strip():
         context = (
-            "(No SCAIO sources matched this message. It is most likely a follow-up about "
-            "the conversation so far — answer from the earlier turns.)"
+            "(No SCAIO sources matched this message. It is either a follow-up about the "
+            "conversation so far, or a question about Sky itself — answer from the earlier "
+            "turns and from who you are. Do not answer substantive questions about South "
+            "Carolina or AI policy without sources.)"
         )
     return f"<context>\n{context}\n</context>\n\nQuestion: {question}"
 
@@ -262,7 +281,7 @@ def query(req: QueryRequest):
     # anything on its own, because it is embedded as a standalone search query. Bailing
     # out here would answer every follow-up with the no-corpus line without ever asking
     # Claude. Only short-circuit when there is no conversation to fall back on.
-    if len(citations) < MIN_CHUNKS and not req.history:
+    if len(citations) < MIN_CHUNKS and not req.history and not is_meta_question(req.question):
         return QueryResponse(
             answer=(
                 "I don't have enough information in the current corpus to answer that question. "
