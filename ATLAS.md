@@ -10,7 +10,7 @@
 | **Project** | SCAIO Policy Navigator |
 | **One-liner** | SC AI policy navigator RAG chatbot over 11 SC government policy sources |
 | **Status** | shipping |
-| **Last Active** | 2026-09-19 |
+| **Last Active** | 2026-09-23 |
 | **Stall Threshold** | 14 days |
 | **Repo** | https://github.com/jimmyardis/scaio-policy-navigator |
 | **Site repo** | https://github.com/jimmyardis/scaio (GitHub Pages → www.scaio.org) |
@@ -19,32 +19,37 @@
 
 ## Current State
 
-**Deployed on scaio.org.** The chat bubble is live on all 37 pages, verified
-end-to-end in a browser on desktop and mobile against the live site.
+**Deployed on scaio.org as "Sky."** The assistant was renamed from "SC AI Policy
+Navigator" to Sky across the widget, the `/ask` page and the system prompt — the
+old name undersold a corpus that covers the whole observatory, not just policy.
+Sky now carries conversation memory (last 6 turns) and can answer follow-ups,
+corrections and questions about itself.
 
-Corpus is 48 sources (~182 vectors) after adding the "Everywhere at Once"
-article (2026-09-19). The site repo now also carries the SCAIO content agent
-(`jimmyardis/scaio` → `execution/`, `directives/scaio_content_agent.md`), which
-drafts posts as PRs; its Phase 3 will feed merged posts into this corpus.
+Corpus is 52 sources / ~216 vectors. A latent ingest bug was found and fixed:
+trafilatura was discarding every heading that sits inside a link wrapper, which
+on scaio.org meant all primer card titles and all section headings. Local pages
+now extract through a structure-preserving pass, and all 39 site sources were
+re-ingested; chunk counts rose materially (chapter 6: 3 → 9).
 
-Corpus history: 11 external sources (37 vectors) → 47 sources (179 vectors).
-scaio.org itself had only ever been indexed as 3 chunks of a March homepage
-fetch — the flagship report, primers, articles, briefs and safety pages were
-absent entirely, and the bill tracker was invisible because /policy renders
-client-side from JSON. Both are fixed: site pages ingest from a local checkout
-of the site repo, and each bill/development is indexed as its own record.
+`ask.scaio.org` is still not serving. See Blockers — it now needs a one-line DNS
+change at Namecheap.
 
 ## Next Action
 
-Add the two DNS records at Namecheap so `ask.scaio.org` resolves, then flip
-`NAVIGATOR_ORIGIN` in `assets/navigator.js` (site repo) from the Railway
-hostname to `https://ask.scaio.org`.
+Update the `ask` CNAME at Namecheap to the **new** target
+`xqal1j57.up.railway.app`, then flip `NAVIGATOR_ORIGIN` in `assets/navigator.js`
+(site repo) from the Railway hostname to `https://ask.scaio.org`.
 
 ## Blockers
 
-- `ask.scaio.org` is created on Railway but unverified until DNS is added at
-  Namecheap (CNAME `ask` → `mduwwnnz.up.railway.app`, TXT `_railway-verify.ask`
-  → `railway-verify=d0876dbd044ca8c57c63bdc8d388106245a7670a565e0ce763f368522bf0918c`).
+- `ask.scaio.org` needs its Namecheap CNAME changed from
+  `mduwwnnz.up.railway.app` to **`xqal1j57.up.railway.app`**. The original
+  custom-domain entry had gone stale on Railway's side: DNS was correct and
+  Railway reported `syncStatus: ACTIVE`, but its edge returned "Application not
+  found" for `Host: ask.scaio.org` while serving the same edge IP correctly for
+  the service hostname, so ownership validation could never complete.
+  `customDomainIssueCertificate` did not clear it; deleting and re-creating the
+  domain did, and the re-created entry was assigned a different edge host.
 
 ## Open Questions
 
@@ -57,6 +62,40 @@ hostname to `https://ask.scaio.org`.
 ## Session Log
 
 <!-- Append-only. Most recent session on top. Claude Code adds an entry at the end of each work session. -->
+
+### 2026-09-23
+
+- **Renamed the assistant to Sky** across widget, `/ask`, embed labels and the
+  system prompt. Sky introduces itself and knows its own name.
+- **Added conversation memory.** `/query` was stateless, so a follow-up like
+  "you listed 10 but said 9" was embedded as a standalone search query, matched
+  nothing above `MIN_SCORE`, failed the `MIN_CHUNKS` gate and returned the
+  no-corpus line **without Claude ever being called**. Requests now carry recent
+  turns; the thin-retrieval short-circuit only fires when there is no
+  conversation to fall back on.
+- **Fixed identity questions.** "Who are you?" retrieves nothing, so it hit the
+  same short-circuit on a fresh thread. Recognised meta-questions now bypass it;
+  off-corpus questions ("capital of France?") still short-circuit.
+- **Root-caused a bad answer to an ingest bug, not a model bug.** The primer
+  count was wrong because `trafilatura` drops headings inside link wrappers —
+  the Learn hub was indexed as description paragraphs with no titles at all.
+  Replaced the local-HTML extractor with a structure-preserving pass and
+  re-ingested all 39 site sources. This had been degrading every site-sourced
+  answer, not just this one.
+- Stripped stale "Primer NN —" prefixes from corpus source titles so Sky's
+  citations match what a reader sees on the page.
+- Site work (site repo): unified all primers into one un-numbered "Primers"
+  section including the two AI Safety primers, which had been orphaned from the
+  Learn hub; corrected two stale status labels (Journal "Coming Soon" with ten
+  articles published; report labelled Edition 0.1 with 0.2 content); published a
+  new **county-council primer** built from SCAIO's own infrastructure reporting.
+- **Diagnosed `ask.scaio.org`.** Serving Railway's `*.up.railway.app` wildcard
+  cert and "Application not found" from the edge. Deleted and re-created the
+  custom domain, which produced a new required CNAME target. Left pending on the
+  registrar change — see Blockers.
+- Decision: did **not** flip `NAVIGATOR_ORIGIN` to `ask.scaio.org`. Pointing the
+  live widget at a hostname without a working cert would break chat on all 37
+  pages.
 
 ### 2026-09-19
 
